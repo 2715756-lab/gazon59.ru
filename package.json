@@ -7,7 +7,9 @@
     "dev:backend": "npm run dev --prefix backend",
     "dev:client": "npm run dev --prefix fullstack/client",
     "dev:admin": "npm run dev --prefix fullstack/admin",
-    "dev": "npx concurrently \"npm run dev:backend\" \"npm run dev:client\" \"npm run dev:admin\""
+    "dev": "npx concurrently \"npm run dev:backend\" \"npm run dev:client\" \"npm run dev:admin\"",
+    "build": "echo 'No build step for root wrapper'",
+    "start": "./start.sh"
   },
   "devDependencies": {
     "concurrently": "^8.2.0"
