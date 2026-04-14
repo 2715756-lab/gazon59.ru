@@ -1,0 +1,32 @@
+{
+  "steps": [
+    {
+      "id": 1,
+      "number": "01",
+      "title": "Подготовка почвы",
+      "description": "Очистка, выравнивание, удобрения",
+      "active": true
+    },
+    {
+      "id": 2,
+      "number": "02",
+      "title": "Нанесение смеси",
+      "description": "Гидропосев семян и мульчи",
+      "active": true
+    },
+    {
+      "id": 3,
+      "number": "03",
+      "title": "Полив и уход",
+      "description": "Регулярный полив 2 недели",
+      "active": true
+    },
+    {
+      "id": 4,
+      "number": "04",
+      "title": "Готовый газон",
+      "description": "Густое зелёное покрытие",
+      "active": true
+    }
+  ]
+}

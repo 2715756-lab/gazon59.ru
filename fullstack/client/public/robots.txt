@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Разрешить индексацию всех страниц
+Allow: /aquagreen-quiz.html
+
+# Запретить индексацию технических файлов
+Disallow: /node_modules/
+Disallow: /src/
+Disallow: /dist/
+Disallow: /*.json
+Disallow: /*.md
+
+# Sitemap
+Sitemap: https://gazon59.ru/sitemap.xml

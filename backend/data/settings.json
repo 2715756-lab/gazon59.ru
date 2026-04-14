@@ -1,0 +1,46 @@
+{
+  "brand": {
+    "name": "Газон АкваГрин",
+    "logo": null
+  },
+  "header": {
+    "phone": "+7 (912) 589-30-09",
+    "telegram": "https://max.ru/id5905056440_1_bot",
+    "whatsapp": null,
+    "showDiscount": true,
+    "discountText": "Скидка 15%"
+  },
+  "hero": {
+    "title": "Гидропосев газона",
+    "subtitle": "за 2 недели",
+    "description": "Идеальный газон без хлопот! Гарантированный всход 95%",
+    "features": [
+      "Гарантия результата",
+      "Работаем по договору",
+      "Бесплатный выезд"
+    ]
+  },
+  "prices": {
+    "hydroseed": 150,
+    "rollLawn": 400,
+    "hydroseedLabel": "от 150 ₽/м²",
+    "rollLawnLabel": "от 400 ₽/м²"
+  },
+  "contacts": {
+    "phone": "+7 (912) 589-30-09",
+    "email": null,
+    "telegram": "https://max.ru/id5905056440_1_bot",
+    "address": "Пермь, с. Култаево",
+    "workHours": "Пн-Сб: 9:00 - 20:00",
+    "serviceArea": "Пермь и Пермский край"
+  },
+  "seo": {
+    "title": "Газон АкваГрин - Гидропосев газона в Перми",
+    "description": "Профессиональный гидропосев газона с гарантией 95%",
+    "keywords": "гидропосев, газон, Пермь"
+  },
+  "analytics": {
+    "yandexMetrika": null,
+    "googleAnalytics": null
+  }
+}

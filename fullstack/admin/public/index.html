@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Админ-панель - Газон АкваГрин</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-screen">
+      <div class="login-box">
+        <div class="login-logo">
+          <div class="logo-icon">🌿</div>
+          <h1>Газон АкваГрин</h1>
+          <p>Административная панель</p>
+        </div>
+        <form id="login-form">
+          <div class="form-group">
+            <label>Логин</label>
+            <input type="text" id="username" placeholder="admin" required>
+          </div>
+          <div class="form-group">
+            <label>Пароль</label>
+            <input type="password" id="password" placeholder="••••••" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Войти</button>
+          <p class="login-hint">По умолчанию: admin / admin123</p>
+        </form>
+      </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="dashboard" class="dashboard hidden">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="logo-icon">🌿</div>
+          <span>АкваГрин</span>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="#" class="nav-item active" data-section="overview">
+            <span>📊</span> Обзор
+          </a>
+          <a href="#" class="nav-item" data-section="settings">
+            <span>⚙️</span> Настройки
+          </a>
+          <a href="#" class="nav-item" data-section="benefits">
+            <span>✨</span> Преимущества
+          </a>
+          <a href="#" class="nav-item" data-section="lawn-types">
+            <span>🌱</span> Виды газонов
+          </a>
+          <a href="#" class="nav-item" data-section="portfolio">
+            <span>📷</span> Портфолио
+          </a>
+          <a href="#" class="nav-item" data-section="reviews">
+            <span>⭐</span> Отзывы
+          </a>
+          <a href="#" class="nav-item" data-section="promotions">
+            <span>🎁</span> Акции
+          </a>
+          <a href="#" class="nav-item" data-section="leads">
+            <span>📋</span> Заявки
+          </a>
+          <a href="#" class="nav-item" data-section="logs">
+            <span>📜</span> Логи
+          </a>
+        </nav>
+        <div class="sidebar-footer">
+          <button id="logout-btn" class="btn btn-secondary btn-block">Выйти</button>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <header class="content-header">
+          <h2 id="page-title">Обзор</h2>
+          <div class="header-actions">
+            <a href="/" target="_blank" class="btn btn-secondary">Открыть сайт ↗</a>
+          </div>
+        </header>
+
+        <div class="content-body">
+          <!-- Overview Section -->
+          <section id="section-overview" class="section">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon">📋</div>
+                <div class="stat-value" id="stat-leads">0</div>
+                <div class="stat-label">Всего заявок</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">📋</div>
+                <div class="stat-value" id="stat-new-leads">0</div>
+                <div class="stat-label">Новых заявок</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-value" id="stat-reviews">0</div>
+                <div class="stat-label">Отзывов</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-icon">📷</div>
+                <div class="stat-value" id="stat-portfolio">0</div>
+                <div class="stat-label">Работ в портфолио</div>
+              </div>
+            </div>
+
+            <div class="recent-leads">
+              <h3>Последние заявки</h3>
+              <div id="recent-leads-list" class="leads-list">
+                <p class="empty">Загрузка...</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Settings Section -->
+          <section id="section-settings" class="section hidden">
+            <div class="card">
+              <h3>Основные настройки</h3>
+              <form id="settings-form">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Название бренда</label>
+                    <input type="text" id="setting-brand-name" name="brand.name">
+                  </div>
+                  <div class="form-group">
+                    <label>Телефон</label>
+                    <input type="text" id="setting-phone" name="contacts.phone">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Telegram бот</label>
+                    <input type="text" id="setting-telegram" name="contacts.telegram">
+                  </div>
+                  <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="setting-email" name="contacts.email">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Адрес</label>
+                    <input type="text" id="setting-address" name="contacts.address">
+                  </div>
+                  <div class="form-group">
+                    <label>Рабочие часы</label>
+                    <input type="text" id="setting-workhours" name="contacts.workHours">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Зона обслуживания</label>
+                  <input type="text" id="setting-service-area" name="contacts.serviceArea">
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Цена гидропосева (₽/м²)</label>
+                    <input type="number" id="setting-price-hydro" name="prices.hydroseed">
+                  </div>
+                  <div class="form-group">
+                    <label>Цена рулонного (₽/м²)</label>
+                    <input type="number" id="setting-price-roll" name="prices.rollLawn">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>SEO Title</label>
+                  <input type="text" id="setting-seo-title" name="seo.title">
+                </div>
+                <div class="form-group">
+                  <label>SEO Description</label>
+                  <textarea id="setting-seo-desc" name="seo.description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                  <label>Код Telegram бота (для уведомлений)</label>
+                  <input type="text" id="setting-bot-token" name="telegramBotToken" placeholder="7025769389:AAGE2H...">
+                </div>
+                <div class="form-group">
+                  <label>Chat ID Telegram</label>
+                  <input type="text" id="setting-chat-id" name="telegramChatId" placeholder="325790647">
+                </div>
+                <button type="submit" class="btn btn-primary">Сохранить настройки</button>
+              </form>
+            </div>
+          </section>
+
+          <!-- Benefits Section -->
+          <section id="section-benefits" class="section hidden">
+            <div class="section-header">
+              <h3>Преимущества</h3>
+              <button class="btn btn-primary" onclick="openModal('benefit')">+ Добавить</button>
+            </div>
+            <div id="benefits-list" class="items-grid"></div>
+          </section>
+
+          <!-- Lawn Types Section -->
+          <section id="section-lawn-types" class="section hidden">
+            <div class="section-header">
+              <h3>Виды газонов</h3>
+              <button class="btn btn-primary" onclick="openModal('lawn-type')">+ Добавить</button>
+            </div>
+            <div id="lawn-types-list" class="items-grid"></div>
+          </section>
+
+          <!-- Portfolio Section -->
+          <section id="section-portfolio" class="section hidden">
+            <div class="section-header">
+              <h3>Портфолио</h3>
+              <button class="btn btn-primary" onclick="openModal('portfolio')">+ Добавить работу</button>
+            </div>
+            <div id="portfolio-list" class="portfolio-grid"></div>
+          </section>
+
+          <!-- Reviews Section -->
+          <section id="section-reviews" class="section hidden">
+            <div class="section-header">
+              <h3>Отзывы</h3>
+              <button class="btn btn-primary" onclick="openModal('review')">+ Добавить отзыв</button>
+            </div>
+            <div id="reviews-list" class="items-grid"></div>
+          </section>
+
+          <!-- Promotions Section -->
+          <section id="section-promotions" class="section hidden">
+            <div class="section-header">
+              <h3>Акции и скидки</h3>
+              <button class="btn btn-primary" onclick="openModal('promotion')">+ Добавить акцию</button>
+            </div>
+            <div id="promotions-list" class="items-grid"></div>
+          </section>
+
+          <!-- Leads Section -->
+          <section id="section-leads" class="section hidden">
+            <div class="section-header">
+              <h3>Заявки с сайта</h3>
+              <button class="btn btn-secondary" onclick="loadLeads()">🔄 Обновить</button>
+            </div>
+            <div id="leads-list" class="leads-table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Дата</th>
+                    <th>Имя</th>
+                    <th>Телефон</th>
+                    <th>Сообщение</th>
+                    <th>Статус</th>
+                    <th>Действия</th>
+                  </tr>
+                </thead>
+                <tbody id="leads-table-body"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Logs Section -->
+          <section id="section-logs" class="section hidden">
+            <div class="section-header">
+              <h3>Логи действий</h3>
+              <button class="btn btn-secondary" onclick="loadLogs()">🔄 Обновить</button>
+            </div>
+            <div id="logs-list" class="logs-container"></div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-overlay" onclick="closeModal()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title">Редактирование</h3>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <form id="modal-form"></form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отмена</button>
+        <button type="button" class="btn btn-primary" onclick="saveModal()">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notifications -->
+  <div id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

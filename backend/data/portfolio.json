@@ -1,0 +1,40 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "title": "Частный дом",
+      "location": "Пермь",
+      "area": "500 м²",
+      "category": "private",
+      "image": "/lawn1.jpg",
+      "active": true
+    },
+    {
+      "id": 2,
+      "title": "Коттеджный посёлок",
+      "location": "Култаево",
+      "area": "1200 м²",
+      "category": "cottage",
+      "image": "/lawn2.jpg",
+      "active": true
+    },
+    {
+      "id": 3,
+      "title": "Ландшафтный дизайн",
+      "location": "Пермь",
+      "area": "800 м²",
+      "category": "landscape",
+      "image": "/lawn3.jpg",
+      "active": true
+    },
+    {
+      "id": 4,
+      "title": "Спортивная площадка",
+      "location": "Пермь",
+      "area": "600 м²",
+      "category": "sport",
+      "image": "/lawn4.jpg",
+      "active": true
+    }
+  ]
+}

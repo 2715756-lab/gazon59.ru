@@ -1,0 +1,46 @@
+{
+  "benefits": [
+    {
+      "id": 1,
+      "icon": "Clock",
+      "title": "Всего 2 недели",
+      "description": "Первые всходы через 5-7 дней",
+      "active": true
+    },
+    {
+      "id": 2,
+      "icon": "Shield",
+      "title": "Гарантия 95%",
+      "description": "Гарантированный всход семян",
+      "active": true
+    },
+    {
+      "id": 3,
+      "icon": "Sprout",
+      "title": "Ровный газон",
+      "description": "Идеально ровное покрытие",
+      "active": true
+    },
+    {
+      "id": 4,
+      "icon": "Droplets",
+      "title": "Экономия воды",
+      "description": "В 3 раза меньше воды",
+      "active": true
+    },
+    {
+      "id": 5,
+      "icon": "Leaf",
+      "title": "Удобрения в составе",
+      "description": "Мульча и питание в смеси",
+      "active": true
+    },
+    {
+      "id": 6,
+      "icon": "Award",
+      "title": "Без пересадки",
+      "description": "Корни уходят глубоко сразу",
+      "active": true
+    }
+  ]
+}

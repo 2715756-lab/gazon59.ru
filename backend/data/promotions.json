@@ -1,0 +1,14 @@
+{
+  "promotions": [
+    {
+      "id": 1,
+      "title": "Скидка 15%",
+      "description": "При заказе до конца месяца",
+      "discount": 15,
+      "startDate": null,
+      "endDate": null,
+      "active": true,
+      "isDefault": true
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "leads": [
+    {
+      "id": 1776069433279,
+      "name": "Test",
+      "phone": "+7-999-123-45-67",
+      "message": null,
+      "status": "new",
+      "createdAt": "2026-04-13T08:37:13.279Z"
+    },
+    {
+      "id": 1776069526124,
+      "name": "Артём",
+      "phone": "+79125893009",
+      "message": null,
+      "status": "new",
+      "createdAt": "2026-04-13T08:38:46.124Z"
+    },
+    {
+      "id": 1776069788063,
+      "name": "Тест Интеграция",
+      "phone": "+7-999-123-45-67",
+      "message": "Тестовая заявка для проверки MAX",
+      "status": "new",
+      "createdAt": "2026-04-13T08:43:08.063Z"
+    },
+    {
+      "id": 1776069803662,
+      "name": "Тест Интеграция MAX",
+      "phone": "+7-999-123-45-67",
+      "message": null,
+      "status": "new",
+      "createdAt": "2026-04-13T08:43:23.662Z"
+    },
+    {
+      "id": 1776070328603,
+      "name": "csd",
+      "phone": "+79125893009",
+      "message": null,
+      "status": "new",
+      "createdAt": "2026-04-13T08:52:08.603Z"
+    },
+    {
+      "id": 1776070385403,
+      "name": "2sws",
+      "phone": "+79125893009",
+      "message": null,
+      "status": "new",
+      "createdAt": "2026-04-13T08:53:05.403Z"
+    },
+    {
+      "id": 1776070454537,
+      "name": "sadadsa",
+      "phone": "+79125893009",
+      "message": null,
+      "status": "new",
+      "createdAt": "2026-04-13T08:54:14.537Z"
+    },
+    {
+      "id": 1776070469334,
+      "name": "sadadsa",
+      "phone": "+79125893009",
+      "message": null,
+      "status": "new",
+      "createdAt": "2026-04-13T08:54:29.334Z"
+    },
+    {
+      "id": 1776070493302,
+      "name": "sadadsa",
+      "phone": "+79125893009",
+      "message": null,
+      "status": "new",
+      "createdAt": "2026-04-13T08:54:53.302Z"
+    },
+    {
+      "id": 1776070516421,
+      "name": "sadadsa",
+      "phone": "+79125893009",
+      "message": null,
+      "status": "new",
+      "createdAt": "2026-04-13T08:55:16.421Z"
+    },
+    {
+      "id": 1776071189911,
+      "name": "qsdqsd",
+      "phone": "+79125893009",
+      "message": null,
+      "status": "new",
+      "createdAt": "2026-04-13T09:06:29.911Z"
+    }
+  ]
+}
