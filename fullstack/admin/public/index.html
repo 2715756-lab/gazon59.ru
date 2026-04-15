@@ -191,7 +191,7 @@
           <section id="section-benefits" class="section hidden">
             <div class="section-header">
               <h3>Преимущества</h3>
-              <button class="btn btn-primary" onclick="openModal('benefit')">+ Добавить</button>
+              <button class="btn btn-primary" data-action="open-modal" data-type="benefit">+ Добавить</button>
             </div>
             <div id="benefits-list" class="items-grid"></div>
           </section>
@@ -200,7 +200,7 @@
           <section id="section-lawn-types" class="section hidden">
             <div class="section-header">
               <h3>Виды газонов</h3>
-              <button class="btn btn-primary" onclick="openModal('lawn-type')">+ Добавить</button>
+              <button class="btn btn-primary" data-action="open-modal" data-type="lawn-type">+ Добавить</button>
             </div>
             <div id="lawn-types-list" class="items-grid"></div>
           </section>
@@ -209,7 +209,7 @@
           <section id="section-portfolio" class="section hidden">
             <div class="section-header">
               <h3>Портфолио</h3>
-              <button class="btn btn-primary" onclick="openModal('portfolio')">+ Добавить работу</button>
+              <button class="btn btn-primary" data-action="open-modal" data-type="portfolio">+ Добавить работу</button>
             </div>
             <div id="portfolio-list" class="portfolio-grid"></div>
           </section>
@@ -218,7 +218,7 @@
           <section id="section-reviews" class="section hidden">
             <div class="section-header">
               <h3>Отзывы</h3>
-              <button class="btn btn-primary" onclick="openModal('review')">+ Добавить отзыв</button>
+              <button class="btn btn-primary" data-action="open-modal" data-type="review">+ Добавить отзыв</button>
             </div>
             <div id="reviews-list" class="items-grid"></div>
           </section>
@@ -227,7 +227,7 @@
           <section id="section-promotions" class="section hidden">
             <div class="section-header">
               <h3>Акции и скидки</h3>
-              <button class="btn btn-primary" onclick="openModal('promotion')">+ Добавить акцию</button>
+              <button class="btn btn-primary" data-action="open-modal" data-type="promotion">+ Добавить акцию</button>
             </div>
             <div id="promotions-list" class="items-grid"></div>
           </section>
@@ -236,7 +236,7 @@
           <section id="section-leads" class="section hidden">
             <div class="section-header">
               <h3>Заявки с сайта</h3>
-              <button class="btn btn-secondary" onclick="loadLeads()">🔄 Обновить</button>
+              <button class="btn btn-secondary" data-action="refresh-leads">🔄 Обновить</button>
             </div>
             <div id="leads-list" class="leads-table-container">
               <table class="data-table">
@@ -259,7 +259,7 @@
           <section id="section-logs" class="section hidden">
             <div class="section-header">
               <h3>Логи действий</h3>
-              <button class="btn btn-secondary" onclick="loadLogs()">🔄 Обновить</button>
+              <button class="btn btn-secondary" data-action="refresh-logs">🔄 Обновить</button>
             </div>
             <div id="logs-list" class="logs-container"></div>
           </section>
@@ -270,18 +270,18 @@
 
   <!-- Modal -->
   <div id="modal" class="modal hidden">
-    <div class="modal-overlay" onclick="closeModal()"></div>
+    <div class="modal-overlay" data-action="close-modal"></div>
     <div class="modal-content">
       <div class="modal-header">
         <h3 id="modal-title">Редактирование</h3>
-        <button class="modal-close" onclick="closeModal()">×</button>
+        <button class="modal-close" data-action="close-modal">×</button>
       </div>
       <div class="modal-body">
         <form id="modal-form"></form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" onclick="closeModal()">Отмена</button>
-        <button type="button" class="btn btn-primary" onclick="saveModal()">Сохранить</button>
+        <button type="button" class="btn btn-secondary" data-action="close-modal">Отмена</button>
+        <button type="button" class="btn btn-primary" data-action="save-modal">Сохранить</button>
       </div>
     </div>
   </div>

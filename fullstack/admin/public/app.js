@@ -41,6 +41,61 @@ function setupEventListeners() {
   
   // Settings form
   document.getElementById('settings-form')?.addEventListener('submit', handleSettingsSave);
+
+  // Global delegated click handler (CSP-safe replacement for inline onclick)
+  document.addEventListener('click', handleActionClick);
+}
+
+function handleActionClick(e) {
+  const target = e.target.closest('[data-action]');
+  if (!target) return;
+
+  e.preventDefault();
+  const action = target.dataset.action;
+
+  if (action === 'open-modal') {
+    openModal(target.dataset.type);
+    return;
+  }
+
+  if (action === 'edit-item') {
+    editItem(target.dataset.type, Number(target.dataset.id));
+    return;
+  }
+
+  if (action === 'toggle-item') {
+    toggleItem(target.dataset.type, Number(target.dataset.id), target.dataset.active === 'true');
+    return;
+  }
+
+  if (action === 'delete-item') {
+    deleteItem(target.dataset.type, Number(target.dataset.id));
+    return;
+  }
+
+  if (action === 'process-lead') {
+    processLead(Number(target.dataset.id));
+    return;
+  }
+
+  if (action === 'refresh-leads') {
+    loadLeads();
+    return;
+  }
+
+  if (action === 'refresh-logs') {
+    loadLogs();
+    return;
+  }
+
+  if (action === 'close-modal') {
+    closeModal();
+    return;
+  }
+
+  if (action === 'save-modal') {
+    saveModal();
+  }
 }
 
 // Auth Functions
@@ -306,11 +361,11 @@ async function loadBenefits() {
         <h4>${b.title}</h4>
         <p>${b.description}</p>
         <div class="item-actions">
-          <button class="btn btn-sm btn-secondary" onclick="editItem('benefit', ${b.id})">✏️ Редактировать</button>
-          <button class="btn btn-sm ${b.active ? 'btn-secondary' : 'btn-primary'}" onclick="toggleItem('benefits', ${b.id}, ${!b.active})">
+          <button class="btn btn-sm btn-secondary" data-action="edit-item" data-type="benefit" data-id="${b.id}">✏️ Редактировать</button>
+          <button class="btn btn-sm ${b.active ? 'btn-secondary' : 'btn-primary'}" data-action="toggle-item" data-type="benefits" data-id="${b.id}" data-active="${!b.active}">
             ${b.active ? '👁️ Скрыть' : '👁️ Показать'}
           </button>
-          <button class="btn btn-sm btn-danger" onclick="deleteItem('benefits', ${b.id})">🗑️</button>
+          <button class="btn btn-sm btn-danger" data-action="delete-item" data-type="benefits" data-id="${b.id}">🗑️</button>
         </div>
       </div>
     `).join('');
@@ -333,11 +388,11 @@ async function loadLawnTypes() {
           ${(t.features || []).map(f => `<li>• ${f}</li>`).join('')}
         </ul>
         <div class="item-actions">
-          <button class="btn btn-sm btn-secondary" onclick="editItem('lawn-type', ${t.id})">✏️ Редактировать</button>
-          <button class="btn btn-sm ${t.active ? 'btn-secondary' : 'btn-primary'}" onclick="toggleItem('lawn-types', ${t.id}, ${!t.active})">
+          <button class="btn btn-sm btn-secondary" data-action="edit-item" data-type="lawn-type" data-id="${t.id}">✏️ Редактировать</button>
+          <button class="btn btn-sm ${t.active ? 'btn-secondary' : 'btn-primary'}" data-action="toggle-item" data-type="lawn-types" data-id="${t.id}" data-active="${!t.active}">
             ${t.active ? '👁️ Скрыть' : '👁️ Показать'}
           </button>
-          <button class="btn btn-sm btn-danger" onclick="deleteItem('lawn-types', ${t.id})">🗑️</button>
+          <button class="btn btn-sm btn-danger" data-action="delete-item" data-type="lawn-types" data-id="${t.id}">🗑️</button>
         </div>
       </div>
     `).join('');
@@ -359,11 +414,11 @@ async function loadPortfolio() {
           <h4>${p.title}</h4>
           <p class="meta">${p.location} • ${p.area}</p>
           <div class="item-actions">
-            <button class="btn btn-sm btn-secondary" onclick="editItem('portfolio', ${p.id})">✏️</button>
-            <button class="btn btn-sm ${p.active ? 'btn-secondary' : 'btn-primary'}" onclick="toggleItem('portfolio', ${p.id}, ${!p.active})">
+            <button class="btn btn-sm btn-secondary" data-action="edit-item" data-type="portfolio" data-id="${p.id}">✏️</button>
+            <button class="btn btn-sm ${p.active ? 'btn-secondary' : 'btn-primary'}" data-action="toggle-item" data-type="portfolio" data-id="${p.id}" data-active="${!p.active}">
               ${p.active ? '👁️' : '👁️'}
             </button>
-            <button class="btn btn-sm btn-danger" onclick="deleteItem('portfolio', ${p.id})">🗑️</button>
+            <button class="btn btn-sm btn-danger" data-action="delete-item" data-type="portfolio" data-id="${p.id}">🗑️</button>
           </div>
         </div>
       </div>
@@ -390,11 +445,11 @@ async function loadReviews() {
         <h4>${r.name}</h4>
         <p class="meta">${r.location}</p>
         <div class="item-actions">
-          <button class="btn btn-sm btn-secondary" onclick="editItem('review', ${r.id})">✏️ Редактировать</button>
-          <button class="btn btn-sm ${r.active ? 'btn-secondary' : 'btn-primary'}" onclick="toggleItem('reviews', ${r.id}, ${!r.active})">
+          <button class="btn btn-sm btn-secondary" data-action="edit-item" data-type="review" data-id="${r.id}">✏️ Редактировать</button>
+          <button class="btn btn-sm ${r.active ? 'btn-secondary' : 'btn-primary'}" data-action="toggle-item" data-type="reviews" data-id="${r.id}" data-active="${!r.active}">
             ${r.active ? '👁️ Скрыть' : '👁️ Показать'}
           </button>
-          <button class="btn btn-sm btn-danger" onclick="deleteItem('reviews', ${r.id})">🗑️</button>
+          <button class="btn btn-sm btn-danger" data-action="delete-item" data-type="reviews" data-id="${r.id}">🗑️</button>
         </div>
       </div>
     `).join('');
@@ -415,11 +470,11 @@ async function loadPromotions() {
         <p>${p.description}</p>
         <p class="meta">Скидка: ${p.discount}%</p>
         <div class="item-actions">
-          <button class="btn btn-sm btn-secondary" onclick="editItem('promotion', ${p.id})">✏️ Редактировать</button>
-          <button class="btn btn-sm ${p.active ? 'btn-secondary' : 'btn-primary'}" onclick="toggleItem('promotions', ${p.id}, ${!p.active})">
+          <button class="btn btn-sm btn-secondary" data-action="edit-item" data-type="promotion" data-id="${p.id}">✏️ Редактировать</button>
+          <button class="btn btn-sm ${p.active ? 'btn-secondary' : 'btn-primary'}" data-action="toggle-item" data-type="promotions" data-id="${p.id}" data-active="${!p.active}">
             ${p.active ? '👁️ Скрыть' : '👁️ Показать'}
           </button>
-          <button class="btn btn-sm btn-danger" onclick="deleteItem('promotions', ${p.id})">🗑️</button>
+          <button class="btn btn-sm btn-danger" data-action="delete-item" data-type="promotions" data-id="${p.id}">🗑️</button>
         </div>
       </div>
     `).join('');
@@ -443,7 +498,7 @@ async function loadLeads() {
         <td><span class="status-badge status-${l.status}">${l.status === 'new' ? 'Новая' : 'Обработана'}</span></td>
         <td>
           ${l.status === 'new' ? `
-            <button class="btn btn-sm btn-primary" onclick="processLead(${l.id})">✓ Обработать</button>
+            <button class="btn btn-sm btn-primary" data-action="process-lead" data-id="${l.id}">✓ Обработать</button>
           ` : '-'}
         </td>
       </tr>
@@ -623,9 +678,9 @@ async function loadModalData(type, id) {
   form.innerHTML = getModalForm(type);
   
   try {
-    const endpoint = type === 'lawn-type' ? 'lawn-types' : `${type}s`;
+    const endpoint = getAdminEndpoint(type);
     const items = await apiRequest(`/admin/${endpoint}`);
-    const item = items.find(i => i.id === id);
+    const item = items.find(i => String(i.id) === String(id));
     
     if (item) {
       Object.keys(item).forEach(key => {
@@ -660,7 +715,7 @@ async function saveModal() {
   });
   
   try {
-    const endpoint = currentModalType === 'lawn-type' ? 'lawn-types' : `${currentModalType}s`;
+    const endpoint = getAdminEndpoint(currentModalType);
     
     if (currentEditId) {
       await apiRequest(`/admin/${endpoint}/${currentEditId}`, {
@@ -681,6 +736,17 @@ async function saveModal() {
   } catch (e) {
     showToast('Ошибка сохранения', 'error');
   }
+}
+
+function getAdminEndpoint(type) {
+  const map = {
+    'benefit': 'benefits',
+    'lawn-type': 'lawn-types',
+    'portfolio': 'portfolio',
+    'review': 'reviews',
+    'promotion': 'promotions'
+  };
+  return map[type] || `${type}s`;
 }
 
 function getSectionName(type) {
