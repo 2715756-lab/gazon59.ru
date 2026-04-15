@@ -3,13 +3,17 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "install-all": "npm install --prefix backend && npm install --prefix fullstack/client && npm install --prefix fullstack/admin",
+    "install-all": "npm install --prefix backend && npm install --include=dev --prefix fullstack/client && npm install --include=dev --prefix fullstack/admin",
     "dev:backend": "npm run dev --prefix backend",
     "dev:client": "npm run dev --prefix fullstack/client",
     "dev:admin": "npm run dev --prefix fullstack/admin",
     "dev": "npx concurrently \"npm run dev:backend\" \"npm run dev:client\" \"npm run dev:admin\"",
-    "build": "echo 'No build step for root wrapper'",
-    "start": "./start.sh"
+    "build:client": "npm run build --prefix fullstack/client",
+    "build:admin": "npm run build --prefix fullstack/admin",
+    "build": "npm run build:client && npm run build:admin",
+    "start:backend": "node backend/server.js",
+    "start": "npm run start:backend",
+    "postinstall": "npm run install-all"
   },
   "devDependencies": {
     "concurrently": "^8.2.0"

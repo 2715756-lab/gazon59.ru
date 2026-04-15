@@ -54,6 +54,8 @@ const authLimiter = rateLimit({
 // Directories
 const DATA_DIR = path.join(__dirname, 'data');
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
+const CLIENT_DIST = path.join(__dirname, '..', 'fullstack', 'client', 'dist');
+const ADMIN_DIST = path.join(__dirname, '..', 'fullstack', 'admin', 'dist');
 
 async function ensureDirectories() {
   await fs.mkdir(DATA_DIR, { recursive: true });
@@ -385,6 +387,18 @@ app.post('/api/leads', async (req, res) => {
 });
 
 app.use('/uploads', express.static(UPLOADS_DIR));
+
+// Serve built client and admin static files
+app.use('/admin', express.static(ADMIN_DIST));
+app.use(express.static(CLIENT_DIST));
+
+app.get('/admin/*', (req, res) => {
+  res.sendFile(path.join(ADMIN_DIST, 'index.html'));
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(CLIENT_DIST, 'index.html'));
+});
 
 // ============ ADMIN API (без изменений) ============
 
