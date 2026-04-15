@@ -24,8 +24,8 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 // Check required environment variables
 if (!JWT_SECRET) {
-  console.error('❌ ERROR: JWT_SECRET is not set in .env file. Server will not start.');
-  console.error('Please create a .env file with JWT_SECRET value.');
+  console.error('❌ ERROR: JWT_SECRET is not set in environment. Server will not start.');
+  console.error('Please set JWT_SECRET in Railway environment variables or backend/.env for local development.');
   process.exit(1);
 }
 
@@ -102,20 +102,27 @@ async function sendToMaxMessenger({ name, phone, message, createdAt }) {
 
   const text = textLines.join('\n');
 
-  // Для каждого chat_id отправляем отдельное сообщение
+  if (!MAX_MESSENGER_TOKEN || MAX_MESSENGER_CHAT_IDS.length === 0) {
+    const warning = 'MAX_MESSENGER_TOKEN or MAX_MESSENGER_CHAT_IDS is not configured.';
+    console.warn(warning);
+    return { success: false, error: warning };
+  }
+
   const results = await Promise.allSettled(
     MAX_MESSENGER_CHAT_IDS.map(async (chatId) => {
-      const url = 'https://platform-api.max.ru/messages';
-      const response = await fetch(url, {
+      const url = new URL('https://platform-api.max.ru/messages');
+      url.searchParams.set('chat_id', String(parseInt(chatId, 10)));
+
+      const response = await fetch(url.toString(), {
         method: 'POST',
         headers: {
           'Authorization': MAX_MESSENGER_TOKEN,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          chat_id: parseInt(chatId, 10),
           text,
-          format: 'html'
+          notify: true,
+          disable_link_preview: false
         })
       });
 
@@ -123,16 +130,20 @@ async function sendToMaxMessenger({ name, phone, message, createdAt }) {
         const errorBody = await response.text();
         throw new Error(`HTTP ${response.status}: ${errorBody}`);
       }
+
       return { chatId, success: true };
     })
   );
 
   const errors = results.filter(r => r.status === 'rejected');
   if (errors.length > 0) {
-    console.error(`Failed to send to ${errors.length} chat(s):`, errors.map(e => e.reason));
-  } else {
-    console.log(`MAX notification sent to ${results.length} chat(s)`);
+    const errorMessages = errors.map(e => e.reason?.message || String(e.reason));
+    console.error(`MAX send failed for ${errors.length} destination(s):`, errorMessages);
+    return { success: false, error: errorMessages.join('; ') };
   }
+
+  console.log(`MAX notification sent to ${results.length} destination(s)`);
+  return { success: true };
 }
 
 // Initialize DB (оставляем без изменений, но убираем telegramBotToken из настроек при желании)
@@ -368,20 +379,25 @@ app.post('/api/leads', async (req, res) => {
     leads.leads.push(newLead);
     await writeDB('leads', leads);
     
-    // Отправка в MAX Messenger
-    try {
-      await sendToMaxMessenger({
-        name,
-        phone,
-        message,
-        createdAt: newLead.createdAt
+    const maxResult = await sendToMaxMessenger({
+      name,
+      phone,
+      message,
+      createdAt: newLead.createdAt
+    });
+
+    if (!maxResult.success) {
+      console.error('MAX messenger error:', maxResult.error);
+      return res.status(502).json({
+        success: false,
+        error: 'Заявка сохранена, но уведомление MAX не отправлено.',
+        details: maxResult.error
       });
-    } catch (e) {
-      console.error('MAX messenger error:', e);
     }
     
     res.json({ success: true, message: 'Заявка принята' });
   } catch (e) {
+    console.error('Lead submission error:', e);
     res.status(500).json({ error: 'Ошибка сервера' });
   }
 });
