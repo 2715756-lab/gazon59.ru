@@ -19,8 +19,12 @@ const MAX_MESSENGER_CHAT_IDS = (
 );
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET;
+
+console.info('MAX_MESSENGER_TOKEN configured:', !!MAX_MESSENGER_TOKEN);
+console.info('MAX_MESSENGER_CHAT_IDS count:', MAX_MESSENGER_CHAT_IDS.length);
 
 // Check required environment variables
 if (!JWT_SECRET) {
