@@ -249,6 +249,16 @@ function App() {
                 {item.label}
               </button>
             ))}
+            <a
+              href="https://vk.com/grasperm59"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`font-medium transition-colors hover:text-green-500 ${
+                isScrolled ? 'text-gray-700' : 'text-white/90'
+              }`}
+            >
+              Мы в VK
+            </a>
           </nav>
 
           <div className="hidden md:flex items-center gap-4">
@@ -302,6 +312,14 @@ function App() {
                   {item.label}
                 </button>
               ))}
+              <a
+                href="https://vk.com/grasperm59"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-left py-2 text-gray-700 font-medium"
+              >
+                Мы в VK
+              </a>
               <Button 
                 onClick={() => {
                   setIsModalOpen(true);

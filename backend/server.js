@@ -10,13 +10,37 @@ const multer = require('multer');
 require('dotenv').config();
 
 // Переменные для MAX Messenger
-const MAX_MESSENGER_TOKEN = process.env.MAX_MESSENGER_TOKEN;
-const MAX_MESSENGER_CHAT_IDS = (
-  (process.env.MAX_MESSENGER_CHAT_IDS || process.env.MAX_MESSENGER_CHAT_ID || '')
+const MAX_MESSENGER_TOKEN =
+  process.env.MAX_MESSENGER_TOKEN ||
+  process.env.MAX_BOT_TOKEN ||
+  process.env.BOT_TOKEN ||
+  process.env.ADMIN_TOKEN;
+
+const parseIds = (raw) =>
+  String(raw || '')
+    .replace(/['"`]/g, '')
     .split(',')
     .map((id) => id.trim())
-    .filter(Boolean)
-);
+    .filter(Boolean);
+
+const MAX_MESSENGER_CHAT_IDS_RAW =
+  process.env.MAX_MESSENGER_CHAT_IDS ||
+  process.env.MAX_MESSENGER_CHAT_ID ||
+  process.env.MAX_CHAT_ID ||
+  process.env.ADMIN_CHAT_ID ||
+  process.env.MAX_MESENGER_CHAT_ID ||
+  '';
+
+const MAX_MESSENGER_USER_IDS_RAW =
+  process.env.MAX_MESSENGER_USER_IDS ||
+  process.env.MAX_MESSENGER_USER_ID ||
+  process.env.MAX_USER_ID ||
+  process.env.USER_ID ||
+  process.env.ADMIN_USER_ID ||
+  '';
+
+const MAX_MESSENGER_CHAT_IDS = parseIds(MAX_MESSENGER_CHAT_IDS_RAW);
+const MAX_MESSENGER_USER_IDS = parseIds(MAX_MESSENGER_USER_IDS_RAW);
 
 const app = express();
 app.set('trust proxy', 1);
@@ -24,7 +48,16 @@ const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET;
 
 console.info('MAX_MESSENGER_TOKEN configured:', !!MAX_MESSENGER_TOKEN);
+console.info('MAX_MESSENGER_CHAT_IDS raw:', MAX_MESSENGER_CHAT_IDS_RAW);
 console.info('MAX_MESSENGER_CHAT_IDS count:', MAX_MESSENGER_CHAT_IDS.length);
+console.info('MAX_MESSENGER_USER_IDS raw:', MAX_MESSENGER_USER_IDS_RAW);
+console.info('MAX_MESSENGER_USER_IDS count:', MAX_MESSENGER_USER_IDS.length);
+if (MAX_MESSENGER_CHAT_IDS.some((id) => !/^\d+$/.test(id))) {
+  console.warn('MAX_MESSENGER_CHAT_IDS contains non-numeric value(s):', MAX_MESSENGER_CHAT_IDS);
+}
+if (MAX_MESSENGER_USER_IDS.some((id) => !/^\d+$/.test(id))) {
+  console.warn('MAX_MESSENGER_USER_IDS contains non-numeric value(s):', MAX_MESSENGER_USER_IDS);
+}
 
 // Check required environment variables
 if (!JWT_SECRET) {
@@ -82,9 +115,10 @@ async function writeDB(fileName, data) {
 
 // Отправка уведомления в MAX Messenger
 async function sendToMaxMessenger({ name, phone, message, createdAt }) {
-  if (!MAX_MESSENGER_TOKEN || MAX_MESSENGER_CHAT_IDS.length === 0) {
-    console.warn('MAX_MESSENGER_TOKEN or chat IDs not configured, skipping');
-    return;
+  if (!MAX_MESSENGER_TOKEN) {
+    const warning = 'MAX_MESSENGER_TOKEN is not configured, skipping MAX Messenger notification.';
+    console.warn(warning);
+    return { success: false, error: warning };
   }
 
   const timestamp = createdAt
@@ -106,42 +140,70 @@ async function sendToMaxMessenger({ name, phone, message, createdAt }) {
 
   const text = textLines.join('\n');
 
-  if (!MAX_MESSENGER_TOKEN || MAX_MESSENGER_CHAT_IDS.length === 0) {
-    const warning = 'MAX_MESSENGER_TOKEN or MAX_MESSENGER_CHAT_IDS is not configured.';
+  const sendMessageTo = async (type, id) => {
+    const url = new URL('https://platform-api.max.ru/messages');
+    url.searchParams.set(type, String(parseInt(id, 10)));
+
+    const response = await fetch(url.toString(), {
+      method: 'POST',
+      headers: {
+        Authorization: MAX_MESSENGER_TOKEN,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        text,
+        notify: true,
+        disable_link_preview: false
+      })
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`HTTP ${response.status}: ${errorBody}`);
+    }
+
+    return { id, type, success: true };
+  };
+
+  const sendAttempts = async (destinations) =>
+    Promise.allSettled(
+      destinations.map(async ({ type, id }) => sendMessageTo(type, id))
+    );
+
+  const chatDestinations = MAX_MESSENGER_CHAT_IDS.map((id) => ({ type: 'chat_id', id }));
+  const userDestinations = MAX_MESSENGER_USER_IDS.map((id) => ({ type: 'user_id', id }));
+  let destinations = chatDestinations.length > 0 ? chatDestinations : userDestinations;
+
+  if (destinations.length === 0) {
+    const warning = 'MAX_MESSENGER_CHAT_IDS or MAX_MESSENGER_USER_IDS is not configured.';
     console.warn(warning);
     return { success: false, error: warning };
   }
 
-  const results = await Promise.allSettled(
-    MAX_MESSENGER_CHAT_IDS.map(async (chatId) => {
-      const url = new URL('https://platform-api.max.ru/messages');
-      url.searchParams.set('chat_id', String(parseInt(chatId, 10)));
+  let results = await sendAttempts(destinations);
 
-      const response = await fetch(url.toString(), {
-        method: 'POST',
-        headers: {
-          'Authorization': MAX_MESSENGER_TOKEN,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          text,
-          notify: true,
-          disable_link_preview: false
-        })
-      });
+  const allChatNotFound =
+    chatDestinations.length > 0 &&
+    results.every(
+      (r) =>
+        r.status === 'rejected' &&
+        String(r.reason?.message || '').includes('chat.not.found')
+    );
 
-      if (!response.ok) {
-        const errorBody = await response.text();
-        throw new Error(`HTTP ${response.status}: ${errorBody}`);
-      }
+  if (allChatNotFound) {
+    if (userDestinations.length > 0) {
+      console.warn('Chat IDs failed with chat.not.found, retrying with configured user IDs');
+      results = await sendAttempts(userDestinations);
+    } else {
+      console.warn('Chat IDs failed with chat.not.found; retrying same values as user_id');
+      const fallbackUserDestinations = chatDestinations.map(({ id }) => ({ type: 'user_id', id }));
+      results = await sendAttempts(fallbackUserDestinations);
+    }
+  }
 
-      return { chatId, success: true };
-    })
-  );
-
-  const errors = results.filter(r => r.status === 'rejected');
+  const errors = results.filter((r) => r.status === 'rejected');
   if (errors.length > 0) {
-    const errorMessages = errors.map(e => e.reason?.message || String(e.reason));
+    const errorMessages = errors.map((e) => e.reason?.message || String(e.reason));
     console.error(`MAX send failed for ${errors.length} destination(s):`, errorMessages);
     return { success: false, error: errorMessages.join('; ') };
   }
@@ -392,9 +454,10 @@ app.post('/api/leads', async (req, res) => {
 
     if (!maxResult.success) {
       console.error('MAX messenger error:', maxResult.error);
-      return res.status(502).json({
-        success: false,
-        error: 'Заявка сохранена, но уведомление MAX не отправлено.',
+      return res.json({
+        success: true,
+        message: 'Заявка принята',
+        warning: 'Уведомление MAX не отправлено',
         details: maxResult.error
       });
     }
@@ -407,18 +470,6 @@ app.post('/api/leads', async (req, res) => {
 });
 
 app.use('/uploads', express.static(UPLOADS_DIR));
-
-// Serve built client and admin static files
-app.use('/admin', express.static(ADMIN_DIST));
-app.use(express.static(CLIENT_DIST));
-
-app.get('/admin/*', (req, res) => {
-  res.sendFile(path.join(ADMIN_DIST, 'index.html'));
-});
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(CLIENT_DIST, 'index.html'));
-});
 
 // ============ ADMIN API (без изменений) ============
 
@@ -782,6 +833,18 @@ app.post('/api/admin/upload', authenticateToken, upload.single('file'), (req, re
     return res.status(400).json({ error: 'Файл не загружен' });
   }
   res.json({ success: true, url: `/uploads/images/${req.file.filename}` });
+});
+
+// Serve built client and admin static files after all API routes
+app.use('/admin', express.static(ADMIN_DIST));
+app.use(express.static(CLIENT_DIST));
+
+app.get('/admin/*', (req, res) => {
+  res.sendFile(path.join(ADMIN_DIST, 'index.html'));
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(CLIENT_DIST, 'index.html'));
 });
 
 // Error handler
