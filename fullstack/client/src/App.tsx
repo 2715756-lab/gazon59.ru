@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { 
   Phone, 
   Check, 
@@ -26,6 +26,155 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
+type SiteSettings = {
+  prices?: {
+    hydroseed?: number;
+    rollLawn?: number;
+    hydroseedLabel?: string;
+    rollLawnLabel?: string;
+  };
+  contacts?: {
+    phone?: string;
+    address?: string;
+    workHours?: string;
+  };
+};
+
+type BenefitItem = {
+  id?: number;
+  icon?: string;
+  title: string;
+  description: string;
+};
+
+type LawnTypeItem = {
+  id?: number;
+  title: string;
+  description: string;
+  features: string[];
+  image: string;
+};
+
+type ReviewItem = {
+  id?: number;
+  name: string;
+  location: string;
+  text: string;
+  rating?: number;
+};
+
+type StepItem = {
+  id?: number;
+  number: string;
+  title: string;
+  description: string;
+};
+
+type PortfolioItem = {
+  id?: number;
+  title: string;
+  location: string;
+  area?: string;
+  image: string;
+};
+
+const defaultSettings: SiteSettings = {
+  prices: {
+    hydroseed: 150,
+    rollLawn: 400,
+    hydroseedLabel: 'от 150 ₽/м²',
+    rollLawnLabel: 'от 400 ₽/м²'
+  },
+  contacts: {
+    phone: '+7 (912) 589-30-09',
+    address: 'Пермь, с. Култаево',
+    workHours: 'Пн-Сб: 9:00 - 20:00'
+  }
+};
+
+const defaultBenefits: BenefitItem[] = [
+  { icon: 'Clock', title: 'Всего 2 недели', description: 'Первые всходы уже через 5-7 дней, полноценный газон за 14 дней' },
+  { icon: 'Shield', title: 'Гарантия 95%', description: 'Гарантированный всход семян при соблюдении технологии' },
+  { icon: 'Sprout', title: 'Ровный газон', description: 'Идеально ровное покрытие без проплешин и сорняков' },
+  { icon: 'Droplets', title: 'Экономия воды', description: 'В 3 раза меньше воды по сравнению с традиционным посевом' },
+  { icon: 'Leaf', title: 'Удобрения в составе', description: 'Мульча и питательные вещества уже в смеси' },
+  { icon: 'Award', title: 'Без пересадки', description: 'Газон растёт на месте, корни уходят глубоко сразу' }
+];
+
+const defaultSteps: StepItem[] = [
+  { number: '01', title: 'Подготовка почвы', description: 'Очистка участка, выравнивание, внесение базовых удобрений' },
+  { number: '02', title: 'Нанесение смеси', description: 'Гидропосев специальной смеси семян, мульчи и удобрений' },
+  { number: '03', title: 'Полив и уход', description: 'Регулярный полив первые 2 недели для лучшего прорастания' },
+  { number: '04', title: 'Готовый газон', description: 'Через 14 дней наслаждайтесь густым зелёным покрытием' }
+];
+
+const defaultLawnTypes: LawnTypeItem[] = [
+  {
+    title: 'Партерные газоны',
+    description: 'Декоративные газоны для элитных ландшафтов. Идеально ровная поверхность, насыщенный зелёный цвет.',
+    features: ['Переносит легкую тень', 'Овсяница красная 35-40 г/см²', 'Мятлик луговой 10-15 г/см²'],
+    image: '/lawn1.jpg'
+  },
+  {
+    title: 'Садово-парковый газон',
+    description: 'Универсальный газон для садов и парков. Выдерживает умеренную нагрузку, красивый внешний вид.',
+    features: ['Для среднеплодородной почвы', 'Переносит вытаптывание', 'Подходит для полутени'],
+    image: '/lawn2.jpg'
+  },
+  {
+    title: 'Мавританский газон',
+    description: 'Пестроцветный газон с разноцветными цветами. Создаёт живописный цветочный ковёр на вашем участке.',
+    features: ['Разноцветные цветы', 'Не требует частого скашивания', 'Привлекает пчёл и бабочек'],
+    image: '/lawn3.jpg'
+  },
+  {
+    title: 'Луговой газон',
+    description: 'Натуральный луговой газон с разнотравьем. Максимально приближён к природным лугам.',
+    features: ['Минимальный уход', 'Высокая засухоустойчивость', 'Естественный вид'],
+    image: '/lawn4.jpg'
+  },
+  {
+    title: 'Спортивный газон',
+    description: 'Прочный газон для спортивных площадок. Выдерживает интенсивные нагрузки и быстро восстанавливается.',
+    features: ['Мятлик луговой 25-30 г/см²', 'Овсяница красная 15-20 г/см²', 'Высокая износостойкость'],
+    image: '/lawn2.jpg'
+  },
+  {
+    title: 'Теневыносливый газон',
+    description: 'Для затененных участков под деревьями. Состоит из теневыносливых злаков, растет медленно, но устойчив к полутени.',
+    features: ['Овсяница теневыносливая', 'Мятлик луговой', 'Устойчив к полутени', 'Медленный рост'],
+    image: '/lawn5.jpg'
+  }
+];
+
+const defaultReviews: ReviewItem[] = [
+  {
+    name: 'Александр Петров',
+    location: 'Пермь',
+    text: 'Заказывали гидропосев для дачи 15 соток. Результат превзошёл ожидания! Через 2 недели уже был полноценный газон. Рекомендую!',
+    rating: 5
+  },
+  {
+    name: 'Елена Смирнова',
+    location: 'с. Култаево',
+    text: 'Очень довольны работой. Быстро, качественно, без грязи и пыли. Газон равномерный, зелёный, густой. Спасибо!',
+    rating: 5
+  },
+  {
+    name: 'Дмитрий Иванов',
+    location: 'Пермь',
+    text: 'Сравнивали с рулонным газоном — гидропосев вышел дешевле и результат лучше. Корни глубокие, газон не выгорает.',
+    rating: 5
+  }
+];
+
+const defaultPortfolio: PortfolioItem[] = [
+  { title: 'Частный дом', location: 'Пермь', area: '500 м²', image: '/lawn1.jpg' },
+  { title: 'Коттеджный посёлок', location: 'Култаево', area: '1200 м²', image: '/lawn2.jpg' },
+  { title: 'Ландшафтный дизайн', location: 'Пермь', area: '800 м²', image: '/lawn3.jpg' },
+  { title: 'Спортивная площадка', location: 'Пермь', area: '600 м²', image: '/lawn4.jpg' }
+];
+
 function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -36,6 +185,12 @@ function App() {
   const [expandedLawn, setExpandedLawn] = useState<number | null>(null);
   const [showVideo, setShowVideo] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [settings, setSettings] = useState<SiteSettings>(defaultSettings);
+  const [benefits, setBenefits] = useState<BenefitItem[]>(defaultBenefits);
+  const [steps, setSteps] = useState<StepItem[]>(defaultSteps);
+  const [lawnTypes, setLawnTypes] = useState<LawnTypeItem[]>(defaultLawnTypes);
+  const [reviews, setReviews] = useState<ReviewItem[]>(defaultReviews);
+  const [portfolio, setPortfolio] = useState<PortfolioItem[]>(defaultPortfolio);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -48,6 +203,80 @@ function App() {
   const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
   const buildApiUrl = (path: string) => `${API_BASE_URL}${path.startsWith('/') ? path : `/${path}`}`;
   const LEADS_ENDPOINT = buildApiUrl('/api/leads');
+  const SITE_DATA_ENDPOINT = buildApiUrl('/api/site-data');
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadSiteData = async () => {
+      try {
+        const response = await fetch(SITE_DATA_ENDPOINT);
+        if (!response.ok) {
+          throw new Error(`Failed to load site data: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (cancelled) return;
+
+        setSettings({
+          ...defaultSettings,
+          ...(data.settings || {}),
+          prices: {
+            ...(defaultSettings.prices || {}),
+            ...(data.settings?.prices || {})
+          },
+          contacts: {
+            ...(defaultSettings.contacts || {}),
+            ...(data.settings?.contacts || {})
+          }
+        });
+
+        if (Array.isArray(data.benefits) && data.benefits.length > 0) {
+          setBenefits(data.benefits);
+        }
+
+        if (Array.isArray(data.steps) && data.steps.length > 0) {
+          setSteps(data.steps);
+        }
+
+        if (Array.isArray(data.lawnTypes) && data.lawnTypes.length > 0) {
+          setLawnTypes(data.lawnTypes);
+        }
+
+        if (Array.isArray(data.reviews) && data.reviews.length > 0) {
+          setReviews(data.reviews);
+        }
+
+        if (Array.isArray(data.portfolio) && data.portfolio.length > 0) {
+          setPortfolio(data.portfolio);
+        }
+      } catch (error) {
+        console.error('Failed to load site data:', error);
+      }
+    };
+
+    loadSiteData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [SITE_DATA_ENDPOINT]);
+
+  const contactPhone = settings.contacts?.phone || defaultSettings.contacts?.phone || '+7 (912) 589-30-09';
+  const contactPhoneHref = `tel:${contactPhone.replace(/[^\d+]/g, '')}`;
+  const contactAddress = settings.contacts?.address || defaultSettings.contacts?.address || 'Пермь, с. Култаево';
+  const contactWorkHours = settings.contacts?.workHours || defaultSettings.contacts?.workHours || 'Пн-Сб: 9:00 - 20:00';
+  const hydroseedLabel = settings.prices?.hydroseedLabel || `от ${settings.prices?.hydroseed ?? 150} ₽/м²`;
+  const rollLawnLabel = settings.prices?.rollLawnLabel || `от ${settings.prices?.rollLawn ?? 400} ₽/м²`;
+
+  const benefitIcons: Record<string, ReactNode> = {
+    Clock: <Clock className="w-10 h-10 text-green-600" />,
+    Shield: <Shield className="w-10 h-10 text-green-600" />,
+    Sprout: <Sprout className="w-10 h-10 text-green-600" />,
+    Droplets: <Droplets className="w-10 h-10 text-green-600" />,
+    Leaf: <Leaf className="w-10 h-10 text-green-600" />,
+    Award: <Award className="w-10 h-10 text-green-600" />
+  };
 
   const submitLead = async (lead: { name: string; phone: string; message?: string }) => {
     const response = await fetch(LEADS_ENDPOINT, {
@@ -93,122 +322,6 @@ function App() {
       setIsMobileMenuOpen(false);
     }
   };
-
-  const benefits = [
-    {
-      icon: <Clock className="w-10 h-10 text-green-600" />,
-      title: 'Всего 2 недели',
-      description: 'Первые всходы уже через 5-7 дней, полноценный газон за 14 дней'
-    },
-    {
-      icon: <Shield className="w-10 h-10 text-green-600" />,
-      title: 'Гарантия 95%',
-      description: 'Гарантированный всход семян при соблюдении технологии'
-    },
-    {
-      icon: <Sprout className="w-10 h-10 text-green-600" />,
-      title: 'Ровный газон',
-      description: 'Идеально ровное покрытие без проплешин и сорняков'
-    },
-    {
-      icon: <Droplets className="w-10 h-10 text-green-600" />,
-      title: 'Экономия воды',
-      description: 'В 3 раза меньше воды по сравнению с традиционным посевом'
-    },
-    {
-      icon: <Leaf className="w-10 h-10 text-green-600" />,
-      title: 'Удобрения в составе',
-      description: 'Мульча и питательные вещества уже в смеси'
-    },
-    {
-      icon: <Award className="w-10 h-10 text-green-600" />,
-      title: 'Без пересадки',
-      description: 'Газон растёт на месте, корни уходят глубоко сразу'
-    }
-  ];
-
-  const steps = [
-    {
-      number: '01',
-      title: 'Подготовка почвы',
-      description: 'Очистка участка, выравнивание, внесение базовых удобрений'
-    },
-    {
-      number: '02',
-      title: 'Нанесение смеси',
-      description: 'Гидропосев специальной смеси семян, мульчи и удобрений'
-    },
-    {
-      number: '03',
-      title: 'Полив и уход',
-      description: 'Регулярный полив первые 2 недели для лучшего прорастания'
-    },
-    {
-      number: '04',
-      title: 'Готовый газон',
-      description: 'Через 14 дней наслаждайтесь густым зелёным покрытием'
-    }
-  ];
-
-  const lawnTypes = [
-    {
-      title: 'Партерные газоны',
-      description: 'Декоративные газоны для элитных ландшафтов. Идеально ровная поверхность, насыщенный зелёный цвет.',
-      features: ['Переносит легкую тень', 'Овсяница красная 35-40 г/см²', 'Мятлик луговой 10-15 г/см²'],
-      image: '/lawn1.jpg'
-    },
-    {
-      title: 'Садово-парковый газон',
-      description: 'Универсальный газон для садов и парков. Выдерживает умеренную нагрузку, красивый внешний вид.',
-      features: ['Для среднеплодородной почвы', 'Переносит вытаптывание', 'Подходит для полутени'],
-      image: '/lawn2.jpg'
-    },
-    {
-      title: 'Мавританский газон',
-      description: 'Пестроцветный газон с разноцветными цветами. Создаёт живописный цветочный ковёр на вашем участке.',
-      features: ['Разноцветные цветы', 'Не требует частого скашивания', 'Привлекает пчёл и бабочек'],
-      image: '/lawn3.jpg'
-    },
-    {
-      title: 'Луговой газон',
-      description: 'Натуральный луговой газон с разнотравьем. Максимально приближён к природным лугам.',
-      features: ['Минимальный уход', 'Высокая засухоустойчивость', 'Естественный вид'],
-      image: '/lawn4.jpg'
-    },
-    {
-      title: 'Спортивный газон',
-      description: 'Прочный газон для спортивных площадок. Выдерживает интенсивные нагрузки и быстро восстанавливается.',
-      features: ['Мятлик луговой 25-30 г/см²', 'Овсяница красная 15-20 г/см²', 'Высокая износостойкость'],
-      image: '/lawn2.jpg'
-    },
-    {
-      title: 'Теневыносливый газон',
-      description: 'Для затененных участков под деревьями. Состоит из теневыносливых злаков, растет медленно, но устойчив к полутени.',
-      features: ['Овсяница теневыносливая', 'Мятлик луговой', 'Устойчив к полутени', 'Медленный рост'],
-      image: '/lawn5.jpg'
-    }
-  ];
-
-  const reviews = [
-    {
-      name: 'Александр Петров',
-      location: 'Пермь',
-      text: 'Заказывали гидропосев для дачи 15 соток. Результат превзошёл ожидания! Через 2 недели уже был полноценный газон. Рекомендую!',
-      rating: 5
-    },
-    {
-      name: 'Елена Смирнова',
-      location: 'с. Култаево',
-      text: 'Очень довольны работой. Быстро, качественно, без грязи и пыли. Газон равномерный, зелёный, густой. Спасибо!',
-      rating: 5
-    },
-    {
-      name: 'Дмитрий Иванов',
-      location: 'Пермь',
-      text: 'Сравнивали с рулонным газоном — гидропосев вышел дешевле и результат лучше. Корни глубокие, газон не выгорает.',
-      rating: 5
-    }
-  ];
 
   return (
     <div className="min-h-screen bg-white">
@@ -263,14 +376,14 @@ function App() {
 
           <div className="hidden md:flex items-center gap-4">
             <a 
-              href="tel:+79125893009" 
+              href={contactPhoneHref}
               className={`font-semibold transition-opacity duration-300 ${
                 isScrolled 
                   ? 'text-gray-800 hover:text-gray-600' 
                   : 'text-white/50 hover:text-white'
               }`}
             >
-              +7 (912) 589-30-09
+              {contactPhone}
             </a>
             <Button 
               onClick={() => setIsModalOpen(true)}
@@ -644,7 +757,7 @@ function App() {
                 className="bg-green-50 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-green-100"
               >
                 <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mb-4">
-                  {benefit.icon}
+                  {benefitIcons[benefit.icon || ''] || benefitIcons.Leaf}
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">{benefit.title}</h3>
                 <p className="text-gray-600">{benefit.description}</p>
@@ -689,7 +802,7 @@ function App() {
                 ))}
               </ul>
               <div className="mt-8 pt-6 border-t border-green-200">
-                <div className="text-3xl font-bold text-green-700">от 150 ₽/м²</div>
+                <div className="text-3xl font-bold text-green-700">{hydroseedLabel}</div>
               </div>
             </div>
 
@@ -712,7 +825,7 @@ function App() {
                 ))}
               </ul>
               <div className="mt-8 pt-6 border-t border-gray-200">
-                <div className="text-3xl font-bold text-gray-700">от 400 ₽/м²</div>
+                <div className="text-3xl font-bold text-gray-700">{rollLawnLabel}</div>
               </div>
             </div>
           </div>
@@ -763,54 +876,22 @@ function App() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="group relative overflow-hidden rounded-2xl aspect-square">
-              <img 
-                src="/lawn1.jpg" 
-                alt="Газон после гидропосева" 
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              <div className="absolute bottom-4 left-4 text-white">
-                <div className="font-bold">Частный дом</div>
-                <div className="text-sm text-white/80">Пермь, 500 м²</div>
+            {portfolio.slice(0, 4).map((item, index) => (
+              <div key={item.id ?? index} className="group relative overflow-hidden rounded-2xl aspect-square">
+                <img 
+                  src={item.image} 
+                  alt={item.title}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="absolute bottom-4 left-4 text-white">
+                  <div className="font-bold">{item.title}</div>
+                  <div className="text-sm text-white/80">
+                    {item.location}{item.area ? `, ${item.area}` : ''}
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="group relative overflow-hidden rounded-2xl aspect-square">
-              <img 
-                src="/lawn2.jpg" 
-                alt="Газон у дома" 
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              <div className="absolute bottom-4 left-4 text-white">
-                <div className="font-bold">Коттеджный посёлок</div>
-                <div className="text-sm text-white/80">Култаево, 1200 м²</div>
-              </div>
-            </div>
-            <div className="group relative overflow-hidden rounded-2xl aspect-square">
-              <img 
-                src="/lawn3.jpg" 
-                alt="Зелёный газон" 
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              <div className="absolute bottom-4 left-4 text-white">
-                <div className="font-bold">Ландшафтный дизайн</div>
-                <div className="text-sm text-white/80">Пермь, 800 м²</div>
-              </div>
-            </div>
-            <div className="group relative overflow-hidden rounded-2xl aspect-square">
-              <img 
-                src="/lawn4.jpg" 
-                alt="Свежий газон" 
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              <div className="absolute bottom-4 left-4 text-white">
-                <div className="font-bold">Спортивная площадка</div>
-                <div className="text-sm text-white/80">Пермь, 600 м²</div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -831,7 +912,7 @@ function App() {
             {reviews.map((review, index) => (
               <div key={index} className="bg-green-50 rounded-2xl p-6 border border-green-100">
                 <div className="flex gap-1 mb-4">
-                  {[...Array(review.rating)].map((_, i) => (
+                  {[...Array(Math.max(1, Math.min(5, Number(review.rating) || 5)))].map((_, i) => (
                     <Star key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400" />
                   ))}
                 </div>
@@ -908,7 +989,7 @@ function App() {
                 Получить скидку 15%
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
-              <a href="tel:+79125893009">
+              <a href={contactPhoneHref}>
                 <Button 
                   variant="outline" 
                   size="lg"
@@ -962,15 +1043,15 @@ function App() {
               <ul className="space-y-3 text-gray-400">
                 <li className="flex items-center gap-2">
                   <Phone className="w-4 h-4" />
-                  +7 (912) 589-30-09
+                  {contactPhone}
                 </li>
                 <li className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
-                  Пермь, с. Култаево
+                  {contactAddress}
                 </li>
                 <li className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
-                  Пн-Сб: 9:00 - 20:00
+                  {contactWorkHours}
                 </li>
               </ul>
             </div>
