@@ -266,8 +266,14 @@ function App() {
   const contactPhoneHref = `tel:${contactPhone.replace(/[^\d+]/g, '')}`;
   const contactAddress = settings.contacts?.address || defaultSettings.contacts?.address || 'Пермь, с. Култаево';
   const contactWorkHours = settings.contacts?.workHours || defaultSettings.contacts?.workHours || 'Пн-Сб: 9:00 - 20:00';
-  const hydroseedLabel = settings.prices?.hydroseedLabel || `от ${settings.prices?.hydroseed ?? 150} ₽/м²`;
-  const rollLawnLabel = settings.prices?.rollLawnLabel || `от ${settings.prices?.rollLawn ?? 400} ₽/м²`;
+  const hydroseedValue = Number(settings.prices?.hydroseed);
+  const rollLawnValue = Number(settings.prices?.rollLawn);
+  const hydroseedLabel = Number.isFinite(hydroseedValue) && hydroseedValue > 0
+    ? `от ${hydroseedValue} ₽/м²`
+    : (settings.prices?.hydroseedLabel || 'от 150 ₽/м²');
+  const rollLawnLabel = Number.isFinite(rollLawnValue) && rollLawnValue > 0
+    ? `от ${rollLawnValue} ₽/м²`
+    : (settings.prices?.rollLawnLabel || 'от 400 ₽/м²');
 
   const benefitIcons: Record<string, ReactNode> = {
     Clock: <Clock className="w-10 h-10 text-green-600" />,
