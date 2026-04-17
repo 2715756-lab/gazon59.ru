@@ -232,6 +232,18 @@ async function initDB() {
     });
     console.log(`Admin credentials - Username: admin, Password: ${envPassword}`);
     console.log('⚠️  Change ADMIN_PASSWORD in .env for production!');
+  } else if (process.env.ADMIN_PASSWORD) {
+    const envPassword = process.env.ADMIN_PASSWORD;
+    const hashedPassword = crypto.createHash('sha256').update(envPassword).digest('hex');
+    const adminUser = Array.isArray(users.users)
+      ? users.users.find((u) => u.username === 'admin')
+      : null;
+
+    if (adminUser && adminUser.password !== hashedPassword) {
+      adminUser.password = hashedPassword;
+      await writeDB('users', users);
+      console.log('Admin password updated to match ADMIN_PASSWORD env var.');
+    }
   }
   
   // Settings – убираем telegramBotToken и telegramChatId, если они больше не нужны
